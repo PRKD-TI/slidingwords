@@ -1,0 +1,17 @@
+# Android build outputs and intermediate files
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
+.gradle/
+build/
+
+# Signing keys (NUNCA subir para o git!)
+*.jks
+*.keystore
+
+# OS and Editor
+.DS_Store
+Thumbs.db
+.idea/
+*.iml

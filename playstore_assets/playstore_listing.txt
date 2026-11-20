@@ -1,0 +1,72 @@
+================================================================================
+FICHA DO APLICATIVO PARA O GOOGLE PLAY CONSOLE
+================================================================================
+
+1. DETALHES PRINCIPAIS
+--------------------------------------------------------------------------------
+Nome do aplicativo (máx. 30 caracteres):
+Sliding Words
+
+Breve descrição (máx. 80 caracteres):
+Deslize o dedo para formar palavras em português e limpar a matriz!
+
+Categoria:
+Jogos > Palavras
+
+Tags / Palavras-chave:
+Caça-palavras, Palavras cruzadas, Jogo de palavras, Quebra-cabeça, Raciocínio, Português, Desafio de palavras, Offline, Tabuleiro, Word Search, Sliding Words
+
+Classificação de Conteúdo:
+Livre (L / PEGI 3 / Everyone)
+
+
+2. DESCRIÇÃO COMPLETA (máx. 4000 caracteres)
+--------------------------------------------------------------------------------
+Desafie sua mente com o Sliding Words, o jogo de caça-palavras dinâmico e inteligente feito sob medida para quem ama a língua portuguesa!
+
+No Sliding Words, seu objetivo é encontrar as palavras secretas escondidas em uma matriz de letras. Deslize o dedo na horizontal ou vertical para conectar as letras e revelar as palavras corretas.
+
+✨ O GRANDE DIFERENCIAL:
+Ao descobrir uma palavra, as letras que não fazem parte de nenhuma outra palavra restante DESAPARECEM da matriz! Seu desafio é planejar seus movimentos e limpar o tabuleiro por completo.
+
+🎮 RECURSOS E DESTAQUES:
+
+• 🧠 Desafios Personalizáveis: Escolha o tamanho da matriz (de 3x3 até 10x10) e a quantidade de palavras (de 3 a 12 por rodada).
+• 📏 Variação de Tamanho: Defina o limite mínimo e máximo de letras (palavras de 3 a 12 letras).
+• 📚 Dicionário Oficial em Português: Mais de 10.000 palavras selecionadas com acentuação correta.
+• ⭐ Palavras Bônus: Encontrou uma palavra válida no português que não estava na lista principal? Ganhe pontos adicionais!
+• 💡 Sistema de Dicas: Travou em uma fase? Use a dica para iluminar o início da palavra e o espaço correspondente.
+• ⚡ 100% Offline: Jogue em qualquer lugar, no metrô, na viagem ou sem internet, sem consumir seus dados móveis.
+• 🎵 Efeitos Sonoros Imersivos: Sons táteis e fanfarras a cada vitória.
+• 🛡️ Respeito à sua Privacidade: Sem coleta de dados pessoais, sem cadastros obrigatórios e seguro para todas as idades.
+
+Deslize, descubra e exercite o seu vocabulário todos os dias com o Sliding Words! Baixe agora e comece a jogar gratuitamente.
+
+
+3. DECLARAÇÃO DE SEGURANÇA DOS DADOS (DATA SAFETY)
+--------------------------------------------------------------------------------
+No Google Play Console > Política e programas > Segurança dos dados:
+- O app coleta ou compartilha algum dado de usuário relevante? NÃO.
+- Todos os dados coletados pelo app são criptografados em trânsito? N/A (não coleta).
+- O app oferece uma forma de os usuários solicitarem a exclusão dos dados? N/A.
+
+4. QUESTIONÁRIO DE CLASSIFICAÇÃO INDICATIVA (IARC)
+--------------------------------------------------------------------------------
+- E-mail para contato: Seu e-mail de desenvolvedor
+- Categoria do produto: Jogo
+- Violência, sangue ou mutilação? NÃO
+- Medo ou horror? NÃO
+- Conteúdo sexual ou nudez? NÃO
+- Substâncias ilícitas, álcool ou tabaco? NÃO
+- Linguagem imprópria ou ofensiva? NÃO
+- O app permite que os usuários interajam ou conversem entre si? NÃO
+- O app compartilha a localização física atual com outros? NÃO
+- O app permite compra de produtos digitais? NÃO
+Resultado: Classificação "Livre" (L / PEGI 3 / All Ages).
+
+
+5. POLÍTICA DE PRIVACIDADE
+--------------------------------------------------------------------------------
+O arquivo "politica_privacidade.html" já está pronto na pasta playstore_assets/.
+Basta hospedá-lo (por exemplo, no GitHub Pages do seu repositório ou em um site próprio) e colar o link no Play Console.
+================================================================================

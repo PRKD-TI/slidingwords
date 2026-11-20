@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Sliding Words - Caça-Palavras Mobile</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="stylesheet" href="style.css?v=1.0.5">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js?v=6').then(reg => {
+                    reg.update();
+                }).catch(() => {});
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Cabeçalho -->
+        <header class="game-header">
+            <div class="title-area">
+                <h1>Sliding Words</h1>
+                <span class="subtitle"><span id="current-dimension-label">3x4</span> • <span id="current-config-label">6 pal. (3-8 letras)</span> • <span id="current-diff-label">Médio</span></span>
+            </div>
+            <div class="header-controls">
+                <button type="button" id="btn-theme" class="icon-btn" title="Alternar Tema Claro/Escuro">☀️</button>
+                <button type="button" id="btn-dimensions" class="icon-btn" title="Configurar Tabuleiro e Palavras">⚙️</button>
+                <button type="button" id="btn-sound" class="icon-btn" title="Alternar Som">🔊</button>
+                <button type="button" id="btn-help" class="icon-btn" title="Como Jogar">❓</button>
+            </div>
+        </header>
+
+        <!-- Barra de Estatísticas -->
+        <section class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-label">Pontos</span>
+                <span id="score-val" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Palavras</span>
+                <span id="found-counter" class="stat-value">0 / 6</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Tempo</span>
+                <span id="timer-val" class="stat-value">00:00</span>
+            </div>
+        </section>
+
+        <!-- Slots para as Palavras Alvo -->
+        <section class="slots-container">
+            <div class="slots-header">
+                <span id="slots-title">PALAVRAS A ENCONTRAR:</span>
+            </div>
+            <div id="target-slots" class="target-slots">
+                <!-- Preenchido dinamicamente via JS -->
+            </div>
+        </section>
+
+        <!-- Pré-visualização da Palavra sendo formada -->
+        <div class="word-preview-wrapper">
+            <div id="word-preview" class="word-preview"></div>
+        </div>
+
+        <!-- Matriz de Letras Interativa -->
+        <main class="grid-container">
+            <div id="letter-grid" class="letter-grid">
+                <!-- Células geradas via JS -->
+            </div>
+            <svg id="path-overlay" class="path-overlay"></svg>
+        </main>
+
+        <!-- Controles Inferiores -->
+        <footer class="bottom-controls">
+            <button id="btn-hint" class="action-btn secondary">
+                <span>💡</span> Dica
+            </button>
+            <button id="btn-new-game" class="action-btn primary">
+                <span>🔄</span> Novo Jogo
+            </button>
+        </footer>
+    </div>
+
+    <!-- Toast de Notificações -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Canvas para Confetes da Vitória -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Modal de Configuração Avançada (Dimensões, Qtd de Palavras e Faixa de Letras) -->
+    <div id="modal-dimensions" class="modal-backdrop">
+        <div class="modal-card">
+            <h2 class="modal-title">Configurar Desafio</h2>
+            <div class="modal-body">
+                <div class="dimension-slider-row">
+                    <div class="slider-label">
+                        <span>Linhas (N):</span>
+                        <strong id="val-rows">3</strong>
+                    </div>
+                    <input type="range" id="input-rows" min="3" max="10" value="3" step="1">
+                </div>
+
+                <div class="dimension-slider-row">
+                    <div class="slider-label">
+                        <span>Colunas (M):</span>
+                        <strong id="val-cols">4</strong>
+                    </div>
+                    <input type="range" id="input-cols" min="3" max="10" value="4" step="1">
+                </div>
+
+                <div class="dimension-slider-row">
+                    <div class="slider-label">
+                        <span>Quantidade de Palavras:</span>
+                        <strong id="val-words">6</strong>
+                    </div>
+                    <input type="range" id="input-words" min="3" max="12" value="6" step="1">
+                </div>
+
+                <div class="dimension-slider-row">
+                    <div class="slider-label">
+                        <span>Mínimo de Letras:</span>
+                        <strong id="val-min-len">3</strong>
+                    </div>
+                    <input type="range" id="input-min-len" min="3" max="8" value="3" step="1">
+                </div>
+
+                <div class="dimension-slider-row">
+                    <div class="slider-label">
+                        <span>Máximo de Letras:</span>
+                        <strong id="val-max-len">8</strong>
+                    </div>
+                    <input type="range" id="input-max-len" min="3" max="12" value="8" step="1">
+                </div>
+
+                <div class="dimension-slider-row">
+                    <span class="slider-label" style="margin-bottom: 4px;">Dificuldade das Palavras:</span>
+                    <div class="difficulty-options">
+                        <button type="button" class="btn-diff" data-diff="facil">
+                            <span class="diff-title">Fácil</span>
+                            <span class="diff-desc">Palavras comuns</span>
+                        </button>
+                        <button type="button" class="btn-diff active" data-diff="medio">
+                            <span class="diff-title">Médio</span>
+                            <span class="diff-desc">Fáceis e médias</span>
+                        </button>
+                        <button type="button" class="btn-diff" data-diff="dificil">
+                            <span class="diff-title">Difícil</span>
+                            <span class="diff-desc">Todas as palavras</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dimension-slider-row">
+                    <span class="slider-label" style="margin-bottom: 4px;">Tema das Palavras:</span>
+                    <div class="theme-category-options">
+                        <button type="button" class="btn-cat active" data-theme-cat="geral">
+                            <span class="cat-icon">🎲</span>
+                            <span class="cat-title">Geral</span>
+                            <span class="cat-desc">Sem tema (Padrão)</span>
+                        </button>
+                        <button type="button" class="btn-cat" data-theme-cat="princesas">
+                            <span class="cat-icon">👑</span>
+                            <span class="cat-title">Princesas</span>
+                            <span class="cat-desc">Cinderela & Contos</span>
+                        </button>
+                        <button type="button" class="btn-cat" data-theme-cat="animais">
+                            <span class="cat-icon">🐾</span>
+                            <span class="cat-title">Animais</span>
+                            <span class="cat-desc">Bichos & Natureza</span>
+                        </button>
+                        <button type="button" class="btn-cat" data-theme-cat="desenhos">
+                            <span class="cat-icon">🎨</span>
+                            <span class="cat-title">Desenhos</span>
+                            <span class="cat-desc">Masha, Sofia, Daniel</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="dimension-slider-row">
+                    <span class="slider-label" style="margin-bottom: 4px;">Aparência (Visual):</span>
+                    <div class="theme-options">
+                        <button type="button" class="btn-theme-opt active" data-theme="dark">
+                            <span class="theme-icon">🌙</span> Escuro
+                        </button>
+                        <button type="button" class="btn-theme-opt" data-theme="light">
+                            <span class="theme-icon">☀️</span> Claro
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="slider-label" style="margin-bottom: 4px;">Predefinições Rápidas:</span>
+                    <div class="presets-grid">
+                        <button class="btn-preset" data-rows="3" data-cols="4" data-words="6" data-min="3" data-max="8">Padrão (3x4)</button>
+                        <button class="btn-preset" data-rows="3" data-cols="3" data-words="4" data-min="3" data-max="5">Rápido (3x3)</button>
+                        <button class="btn-preset" data-rows="4" data-cols="5" data-words="6" data-min="3" data-max="8">Fácil (4x5)</button>
+                        <button class="btn-preset" data-rows="5" data-cols="5" data-words="8" data-min="4" data-max="8">Médio (5x5)</button>
+                        <button class="btn-preset" data-rows="7" data-cols="7" data-words="10" data-min="4" data-max="10">Grande (7x7)</button>
+                        <button class="btn-preset" data-rows="10" data-cols="10" data-words="12" data-min="4" data-max="12">Mestre (10x10)</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="btn-close-dimensions" class="action-btn secondary">Cancelar</button>
+                <button id="btn-apply-dimensions" class="action-btn primary">Aplicar & Gerar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Como Jogar -->
+    <div id="modal-help" class="modal-backdrop">
+        <div class="modal-card">
+            <h2 class="modal-title">Como Jogar</h2>
+            <div class="modal-body">
+                <p>🔤 <strong>Objetivo:</strong> Descubra as <strong>6 palavras</strong> escondidas na matriz de letras.</p>
+                <p>👉 <strong>Deslize o dedo:</strong> Arraste horizontalmente ou verticalmente entre letras vizinhas para formar palavras de 3 a 8 letras.</p>
+                <p>✨ <strong>Letras Ocultadas:</strong> Quando você encontra uma palavra, as letras que não fazem parte de nenhuma outra palavra restante são <em>ocultadas da matriz</em>.</p>
+                <p>🌟 <strong>Palavras Bônus:</strong> Palavras válidas em português que não estão nos 6 alvos rendem pontos extras!</p>
+            </div>
+            <div class="modal-actions">
+                <button id="btn-close-help" class="action-btn primary" style="width: 100%;">Entendido!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Vitória -->
+    <div id="modal-victory" class="modal-backdrop">
+        <div class="modal-card" style="text-align: center;">
+            <div class="victory-badge">🏆</div>
+            <h2 class="modal-title" style="color: #34d399;">Parabéns! Nível Concluído!</h2>
+            <div class="modal-body">
+                <p>Você encontrou todas as 6 palavras e limpou o tabuleiro com maestria!</p>
+                <div class="victory-stats">
+                    <div class="vic-stat-row">
+                        <span>Pontuação Final:</span>
+                        <strong id="vic-score">0</strong>
+                    </div>
+                    <div class="vic-stat-row">
+                        <span>Tempo:</span>
+                        <strong id="vic-time">00:00</strong>
+                    </div>
+                    <div class="vic-stat-row">
+                        <span>Palavras Bônus:</span>
+                        <strong id="vic-bonus">0</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="btn-next-level" class="action-btn primary" style="width: 100%;">Jogar Novamente</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts do Jogo -->
+    <script src="words_data.js?v=1.0.5"></script>
+    <script src="themes_data.js?v=1.0.5"></script>
+    <script src="puzzle_generator.js?v=1.0.5"></script>
+    <script src="audio.js?v=1.0.5"></script>
+    <script src="game.js?v=1.0.5"></script>
+</body>
+</html>
